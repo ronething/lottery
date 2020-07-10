@@ -1,3 +1,10 @@
+// author: ashing
+// time: 2020/7/11 12:16 上午
+// mail: axingfly@gmail.com
+// Less is more.
+
+// 加锁实现 userList 添加线程安全
+
 package main
 
 import (
@@ -6,10 +13,12 @@ import (
 	"github.com/kataras/iris/mvc"
 	"math/rand"
 	"strings"
+	"sync"
 	"time"
 )
 
 var userList []string
+var mu sync.Mutex
 
 // 抽奖控制器
 type lotteryController struct {
@@ -25,6 +34,7 @@ func newApp() *iris.Application {
 func main() {
 	app := newApp()
 	userList = make([]string, 0)
+	mu = sync.Mutex{}
 
 	app.Run(iris.Addr(":8080"))
 
@@ -40,6 +50,8 @@ func (c *lotteryController) Get() string {
 func (c *lotteryController) PostImport() string {
 	strUsers := c.Ctx.FormValue("users")
 	users := strings.Split(strUsers, ",")
+	mu.Lock()
+	defer mu.Unlock()
 	count1 := len(userList)
 	for _, u := range users {
 		u = strings.TrimSpace(u) // 去除空格
@@ -52,6 +64,8 @@ func (c *lotteryController) PostImport() string {
 }
 
 func (c *lotteryController) GetLucky() string {
+	mu.Lock()
+	defer mu.Unlock()
 	count := len(userList)
 	if count > 1 {
 		seed := time.Now().UnixNano()                                // rand 内部运算的随机数

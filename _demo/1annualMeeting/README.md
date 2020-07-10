@@ -29,3 +29,37 @@ $ curl "http://127.0.0.1:8080/lucky"
 $ curl "http://127.0.0.1:8080/lucky"
 已经没有参与用户，请先通过 /import 导入用户
 ```
+
+### 单元测试
+
+```
+=== RUN   TestLottery
+--- FAIL: TestLottery (0.00s)
+    reporter.go:23:
+        	Error Trace:	reporter.go:23
+        	            				chain.go:21
+        	            				string.go:115
+        	            				main_test.go:36
+        	Error:
+        	            	expected string equal to:
+        	            	 "当前总共参与抽奖的用户数: 100\n"
+
+        	            	but got:
+        	            	 "当前总共参与抽奖的用户数: 98\n"
+        	Test:       	TestLottery
+    reporter.go:23:
+        	Error Trace:	reporter.go:23
+        	            				chain.go:21
+        	            				string.go:115
+        	            				main_test.go:39
+        	Error:
+        	            	expected string equal to:
+        	            	 "当前总共参与抽奖的用户数: 99\n"
+
+        	            	but got:
+        	            	 "当前总共参与抽奖的用户数: 97\n"
+        	Test:       	TestLottery
+FAIL
+```
+
+- 因为对 userList 的操作非线程安全 所以单元测试经常会 failed
