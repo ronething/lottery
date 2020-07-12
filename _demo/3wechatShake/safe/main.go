@@ -12,6 +12,7 @@ import (
 	"log"
 	"math/rand"
 	"os"
+	"sync"
 	"time"
 
 	"github.com/kataras/iris"
@@ -27,6 +28,7 @@ const (
 )
 
 const rateMax = 10000
+
 
 type gift struct {
 	id       int
@@ -47,6 +49,7 @@ type gift struct {
 var logger *log.Logger
 
 var giftList []*gift
+var mu sync.Mutex
 
 // initGift 初始化奖品的 rate 参数
 func initGift() {
@@ -188,6 +191,8 @@ func (l *lotteryController) Get() string {
 
 // GET http://localhost:8080/lucky
 func (l *lotteryController) GetLucky() map[string]interface{} {
+	mu.Lock()
+	defer mu.Unlock()
 	code := luckyCode()
 	result := make(map[string]interface{})
 	result["success"] = false
